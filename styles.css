@@ -1,0 +1,39 @@
+body {
+  background-color: #f8f9fa;
+}
+
+h1 {
+  color: #007bff;
+}
+
+#feedback {
+  margin-top: 10px;
+}
+
+#resultList {
+  max-width: 600px;
+  width: 50%;
+}
+
+@media (max-width: 768px) {
+  #resultList {
+    width: 90%;
+  }
+}
+
+.highlight {
+  background-color: #f9f871;
+  transition: background-color 0.5s ease;
+}
+
+.lowest-score {
+  background-color: #d4edda;
+  font-weight: bold;
+  border: 2px solid #28a745;
+  margin-bottom: 10px;
+}
+
+.score {
+    display: flex;
+    justify-content: space-between;
+}
