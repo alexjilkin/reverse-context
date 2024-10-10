@@ -3,6 +3,9 @@ document.getElementById("theForm").addEventListener("submit", submitGuess);
 
 let results = [];
 
+// const url = "http://localhost:5000/guess";
+const url = "http://107.20.175.218:8000/guess";
+
 async function submitGuess(e) {
   e.preventDefault();
   const word = document.getElementById("wordInput").value;
@@ -18,7 +21,7 @@ async function submitGuess(e) {
   }
 
   try {
-    const response = await fetch("http://localhost:5000/guess", {
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
