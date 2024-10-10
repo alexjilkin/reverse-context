@@ -4,7 +4,7 @@ document.getElementById("theForm").addEventListener("submit", submitGuess);
 let results = [];
 
 // const url = "http://localhost:5000/guess";
-const url = "http://107.20.175.218:8000/guess";
+const url = "http://10.5.3.75:8000/guess";
 
 async function submitGuess(e) {
   e.preventDefault();
@@ -12,7 +12,7 @@ async function submitGuess(e) {
   const feedback = document.getElementById("feedback");
   const resultList = document.getElementById("resultList");
 
-  document.getElementById("wordInput").value = '';
+  document.getElementById("wordInput").value = "";
   feedback.textContent = "";
 
   if (!word) {
@@ -35,9 +35,9 @@ async function submitGuess(e) {
     }
 
     const data = await response.json();
-    const similarityScore = data.similarity.toFixed(2);
+    const similarityScore = data.similarity;
 
-    results.push({ word, similarity: parseFloat(similarityScore) });
+    results.push({ word, similarity: parseInt(similarityScore) });
     results.sort((a, b) => a.similarity - b.similarity);
 
     resultList.innerHTML = "";
@@ -50,7 +50,7 @@ async function submitGuess(e) {
       }
 
       listItem.classList.remove("lowest-score");
-      listItem.textContent = `${result.word}: ${result.similarity.toFixed(2)}`;
+      listItem.textContent = `${result.word}: ${result.similarity}`;
 
       if (index === 0) {
         listItem.classList.add("lowest-score");
@@ -58,7 +58,7 @@ async function submitGuess(e) {
           const shareButton = document.createElement("button");
           shareButton.classList.add("btn", "btn-sm", "btn-success", "ms-2");
           shareButton.textContent = "Share";
-          shareButton.onclick = () => copyToClipboard(result.similarity);
+          shareButton.onclick = () => copyToClipboard(result.similarity, result.word);
           listItem.appendChild(shareButton);
         }
       }
@@ -76,21 +76,42 @@ async function submitGuess(e) {
     feedback.textContent = "Error occurred.";
   }
 }
+function copyToClipboard(similarity, word) {
+  const shareText = `I scored as low as ${similarity} with *${word}* 🎯!`;
 
-function copyToClipboard(similarity) {
-    const shareText = `I got a word with ${similarity} context!`;
-    
-    navigator.clipboard.writeText(shareText).then(() => {
-      const clipboardMessage = document.getElementById("clipboardMessage");
-      clipboardMessage.textContent = "Copied to clipboard: " + shareText;
-      clipboardMessage.style.display = "block";
-  
-      setTimeout(() => {
-        clipboardMessage.style.display = "none";
-      }, 3000);
-  
-    }).catch((err) => {
-      console.error("Could not copy text: ", err);
-    });
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard
+      .writeText(shareText)
+      .then(() => {
+        showClipboardMessage(`Copied to clipboard: ${shareText}`);
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err);
+        showClipboardMessage("Failed to copy to clipboard. Please try again.");
+      });
+  } else {
+    // Fallback for non-secure context (HTTP) environments
+    const textarea = document.createElement("textarea");
+    textarea.value = shareText;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      showClipboardMessage(`Copied to clipboard: ${shareText}`);
+    } catch (err) {
+      console.error("Fallback: Oops, unable to copy", err);
+      showClipboardMessage("Failed to copy to clipboard. Please try again.");
+    }
+    document.body.removeChild(textarea);
   }
-  
+}
+
+function showClipboardMessage(message) {
+  const clipboardMessage = document.getElementById("clipboardMessage");
+  clipboardMessage.textContent = message;
+  clipboardMessage.style.display = "block";
+
+  setTimeout(() => {
+    clipboardMessage.style.display = "none";
+  }, 6000);
+}

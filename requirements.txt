@@ -4,4 +4,6 @@ nltk
 torch
 numpy
 flask_cors
-Gunicorn
+gunicorn
+gensim
+nltk
